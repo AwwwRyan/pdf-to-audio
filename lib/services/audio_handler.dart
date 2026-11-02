@@ -114,6 +114,13 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     await _syncWidget();
   }
 
+  /// Reflects metadata changes (e.g. a rename) in the notification and widget.
+  Future<void> refreshDocument(Document doc) async {
+    final item = mediaItem.value;
+    if (_docId == doc.id && item != null) mediaItem.add(item.copyWith(title: doc.title));
+    await _syncWidget();
+  }
+
   /// Stops and unloads [id], and stops offering it in the widget, e.g.
   /// before deleting or reconverting its audio.
   Future<void> closeIfCurrent(String id) async {
@@ -190,12 +197,13 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
         if (playing) MediaControl.pause else MediaControl.play,
         MediaControl.fastForward,
       ],
+      // No skipToNext/Previous: Android 13+ would show them as extra
+      // ⏮/⏭ buttons duplicating ⏪/⏩. Headphone next/previous keys still
+      // reach skipToNext/Previous via audio_service's media-button handling.
       systemActions: const {
         MediaAction.seek,
         MediaAction.seekForward,
         MediaAction.seekBackward,
-        MediaAction.skipToNext,
-        MediaAction.skipToPrevious,
       },
       androidCompactActionIndices: const [0, 1, 2],
       processingState: const {
