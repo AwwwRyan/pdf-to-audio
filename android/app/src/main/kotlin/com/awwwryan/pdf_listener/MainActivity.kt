@@ -1,7 +1,10 @@
 package com.awwwryan.pdf_listener
 
+import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.provider.Settings
 import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -22,6 +25,16 @@ class MainActivity : AudioServiceActivity() {
                             // Some OEMs don't export the TTS screen; fall back to Settings.
                             startActivity(Intent(Settings.ACTION_SETTINGS)
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                        }
+                        result.success(null)
+                    }
+                    "requestNotificationPermission" -> {
+                        // Android remembers a "don't ask again" answer, so repeat calls are quiet.
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) !=
+                                PackageManager.PERMISSION_GRANTED
+                        ) {
+                            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
                         }
                         result.success(null)
                     }

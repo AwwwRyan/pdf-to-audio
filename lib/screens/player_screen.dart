@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/chunk.dart';
 import '../providers/providers.dart';
+import '../services/android_system.dart';
 import '../services/audio_handler.dart';
 import '../services/chunk_lookup.dart';
 import '../widgets/current_text_panel.dart';
@@ -33,6 +34,9 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
     super.initState();
     final doc = ref.read(documentProvider(widget.documentId))!;
     _loading = _handler.openDocument(doc, speed: ref.read(settingsProvider).playbackSpeed);
+    // The lock-screen / notification controls need this on Android 13+.
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => AndroidSystem.requestNotificationPermission());
   }
 
   @override

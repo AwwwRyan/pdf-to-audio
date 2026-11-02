@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/app_info.dart';
 import '../providers/providers.dart';
+import '../services/android_system.dart';
 import '../services/tts_synth.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -144,7 +145,7 @@ class SettingsScreen extends ConsumerWidget {
                 label: const Text('Open text-to-speech settings'),
                 onPressed: () async {
                   try {
-                    await TtsSynth.openSystemTtsSettings();
+                    await AndroidSystem.openTtsSettings();
                   } on Object {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

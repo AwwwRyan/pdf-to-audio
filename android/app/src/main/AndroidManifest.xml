@@ -4,6 +4,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <!-- Android 13+: without this the playback notification (play/pause,
+         ±10s) is hidden on many devices even while audio keeps playing. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- ExoPlayer requests this for streaming; this app only plays local files
          and makes no network calls. (Debug builds still get INTERNET from
          src/debug for Flutter tooling.) -->

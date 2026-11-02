@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import '../models/app_settings.dart';
@@ -37,7 +36,6 @@ class TtsVoice {
 /// only instance in the app.
 class TtsSynth {
   final FlutterTts _tts = FlutterTts();
-  static const _system = MethodChannel('pdf_listener/system');
   Completer<void>? _pending;
   bool _initialised = false;
 
@@ -112,8 +110,4 @@ class TtsSynth {
     final p = _pending;
     if (p != null && !p.isCompleted) p.completeError(TtsException('Stopped'));
   }
-
-  /// Opens Android's text-to-speech settings (voice data downloads).
-  static Future<void> openSystemTtsSettings() =>
-      _system.invokeMethod<void>('openTtsSettings');
 }
