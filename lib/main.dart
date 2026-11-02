@@ -25,6 +25,7 @@ Future<void> main() async {
   });
   await Hive.initFlutter();
   final repo = await DocumentRepository.open();
+  await repo.tidyFileNameTitles();
   final storage = await AppStorage.open();
   final tts = TtsSynth();
   final handler = await AudioService.init(

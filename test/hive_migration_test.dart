@@ -102,4 +102,32 @@ void main() {
     await repo.put(doc.copyWith(pipelineVersion: kPipelineVersion));
     expect(repo.get('a')!.needsReconversion, isFalse);
   });
+
+  test('tidyFileNameTitles fixes raw file-name titles only', () async {
+    final dir = Directory.systemTemp.createTempSync('hive_titles');
+    addTearDown(() async {
+      await Hive.close();
+      Hive.resetAdapters();
+      dir.deleteSync(recursive: true);
+    });
+    Hive.init(dir.path);
+    final repo = await DocumentRepository.open();
+    Document doc(String id, String file, String title) => Document(
+          id: id,
+          title: title,
+          originalFileName: file,
+          pdfPath: '/x.pdf',
+          pageCount: 1,
+          startPage: 1,
+          endPage: 1,
+          createdAt: DateTime(2026),
+        );
+    await repo.put(doc('raw', 'AWS_DevOps_Guide.pdf', 'AWS_DevOps_Guide'));
+    await repo.put(doc('renamed', 'My_Notes.pdf', 'Week 3 notes'));
+
+    await repo.tidyFileNameTitles();
+
+    expect(repo.get('raw')!.title, 'AWS DevOps Guide');
+    expect(repo.get('renamed')!.title, 'Week 3 notes');
+  });
 }

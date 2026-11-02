@@ -3,6 +3,7 @@ import 'package:hive_ce/hive_ce.dart';
 import '../models/app_settings.dart';
 import '../models/chunk.dart';
 import '../models/document.dart';
+import 'file_title.dart';
 
 /// Hive-backed library metadata. Chunks live in their own box keyed by
 /// document id, so frequent progress/position writes stay small.
@@ -49,6 +50,19 @@ class DocumentRepository {
     final next = change(doc);
     await _docs.put(id, next);
     return next;
+  }
+
+  /// One-off cleanup: titles still equal to the raw file name
+  /// ("AWS_DevOps_Guide") get the readable form ("AWS DevOps Guide").
+  /// Titles the user renamed are left alone.
+  Future<void> tidyFileNameTitles() async {
+    for (final doc in _docs.values.toList()) {
+      final raw = doc.originalFileName.replaceFirst(RegExp(r'\.pdf$', caseSensitive: false), '');
+      final tidy = titleFromFileName(doc.originalFileName);
+      if (doc.title == raw && tidy != raw) {
+        await _docs.put(doc.id, doc.copyWith(title: tidy));
+      }
+    }
   }
 
   Future<void> savePosition(String id, Duration position) =>

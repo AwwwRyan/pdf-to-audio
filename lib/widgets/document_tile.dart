@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import '../models/document.dart';
 import 'format.dart';
 
-enum DocAction { reconvert, cancel, deleteAudio, deleteDocument }
+enum DocAction { rename, reconvert, cancel, deleteAudio, deleteDocument }
 
 extension DocActionLabel on DocAction {
   String get label => switch (this) {
+        DocAction.rename => 'Rename…',
         DocAction.reconvert => 'Reconvert…',
         DocAction.cancel => 'Cancel conversion',
         DocAction.deleteAudio => 'Delete audio',
@@ -14,6 +15,7 @@ extension DocActionLabel on DocAction {
       };
 
   IconData get icon => switch (this) {
+        DocAction.rename => Icons.edit_outlined,
         DocAction.reconvert => Icons.refresh,
         DocAction.cancel => Icons.stop_circle_outlined,
         DocAction.deleteAudio => Icons.music_off_outlined,
@@ -22,6 +24,7 @@ extension DocActionLabel on DocAction {
 }
 
 List<DocAction> actionsFor(Document d) => [
+      DocAction.rename,
       if (!d.isBusy) DocAction.reconvert,
       if (d.isBusy) DocAction.cancel,
       if (d.audioPath != null || d.status == DocStatus.failed) DocAction.deleteAudio,

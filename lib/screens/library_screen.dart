@@ -3,16 +3,17 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
 import '../models/document.dart';
 import '../constants/app_info.dart';
 import '../providers/providers.dart';
+import '../services/file_title.dart';
 import '../services/pdf_extractor.dart';
 import '../services/storage.dart';
 import '../widgets/document_tile.dart';
 import '../widgets/page_range_dialog.dart';
+import '../widgets/rename_dialog.dart';
 import 'player_screen.dart';
 import 'settings_screen.dart';
 
@@ -56,7 +57,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     if (!mounted) return;
     setState(() => _importing = false);
 
-    final title = p.basenameWithoutExtension(picked.name);
+    final title = titleFromFileName(picked.name);
     final range = await showPageRangeDialog(context, title: title, pageCount: pageCount);
     if (range == null) {
       await storage.deleteDocument(id);
@@ -121,6 +122,12 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     final conversion = ref.read(conversionServiceProvider);
     final handler = ref.read(audioHandlerProvider);
     switch (action) {
+      case DocAction.rename:
+        final name = await showRenameDialog(context, doc.title);
+        if (name == null) return;
+        final renamed =
+            await ref.read(repositoryProvider).update(doc.id, (d) => d.copyWith(title: name));
+        if (renamed != null) await handler.refreshDocument(renamed);
       case DocAction.reconvert:
         await _reconvert(doc, askRange: true);
       case DocAction.cancel:
