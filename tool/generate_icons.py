@@ -25,17 +25,19 @@ BRAND = '#2F5D7C'
 GRADIENT_TOP = '#3B7FA8'
 GRADIENT_BOTTOM = '#22506E'
 
-GLYPH = re.search(r'<svg[^>]*>(.*)</svg>',
-                  (ICON_DIR / 'book-headphones.svg').read_text(encoding='utf-8'),
-                  re.S).group(1)
+def read_glyph(path):
+    return re.search(r'<svg[^>]*>(.*)</svg>', path.read_text(encoding='utf-8'), re.S).group(1)
 
 
-def glyph(cx, cy, scale, color='#FFFFFF', stroke=2.0):
-    """The glyph centred on (cx, cy), `scale` canvas units per glyph unit.
-    The r=1 earcup circles are filled so thinner strokes leave no pinhole."""
-    body = GLYPH.replace('<circle', f'<circle fill="{color}"')
+GLYPH = read_glyph(ICON_DIR / 'book-headphones.svg')
+
+
+def glyph(cx, cy, scale, color='#FFFFFF', stroke=2.0, body=GLYPH, fill='none'):
+    """A 24-unit Lucide glyph centred on (cx, cy), `scale` canvas units per
+    glyph unit. Small circles are filled so thin strokes leave no pinhole."""
+    body = body.replace('<circle', f'<circle fill="{color}"')
     return (f'<g transform="translate({cx - 12 * scale} {cy - 12 * scale}) scale({scale})" '
-            f'fill="none" stroke="{color}" stroke-width="{stroke}" '
+            f'fill="{fill}" stroke="{color}" stroke-width="{stroke}" '
             f'stroke-linecap="round" stroke-linejoin="round">{body}</g>')
 
 
@@ -96,3 +98,14 @@ save(svg(1152, 1152, glyph(576, 576, 26)), ICON_DIR / 'splash_android12.png')
 for density, px in {'mdpi': 24, 'hdpi': 36, 'xhdpi': 48, 'xxhdpi': 72, 'xxxhdpi': 96}.items():
     save(svg(px, px, glyph(px / 2, px / 2, px / 24)),
          RES / f'drawable-{density}' / 'ic_stat_accha_sunno.png')
+
+# Home-screen widget controls: white masks, tinted per theme in the layout.
+# Play/pause are filled for a solid centre button; the rotate arrows stay
+# outlined so the "10" label drawn over them stays legible.
+DENSITIES = {'mdpi': 1, 'hdpi': 1.5, 'xhdpi': 2, 'xxhdpi': 3, 'xxxhdpi': 4}
+for name, fill in {'play': 'white', 'pause': 'white', 'rotate-ccw': 'none', 'rotate-cw': 'none'}.items():
+    body = read_glyph(ICON_DIR / 'widget' / f'{name}.svg')
+    for density, k in DENSITIES.items():
+        px = round(24 * k)
+        save(svg(px, px, glyph(px / 2, px / 2, px / 24, body=body, fill=fill)),
+             RES / f'drawable-{density}' / f'ic_widget_{name.replace("-", "_")}.png')

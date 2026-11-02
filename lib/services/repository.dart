@@ -69,4 +69,12 @@ class DocumentRepository {
       AppSettings.fromMap(_settings.get('app') as Map<dynamic, dynamic>?);
 
   Future<void> saveSettings(AppSettings s) => _settings.put('app', s.toMap());
+
+  /// The document most recently opened in the player, so the widget and
+  /// media buttons can resume it after the app was killed.
+  String? get lastDocumentId => _settings.get('lastDocumentId') as String?;
+
+  Future<void> setLastDocumentId(String? id) => id == null
+      ? _settings.delete('lastDocumentId')
+      : _settings.put('lastDocumentId', id);
 }

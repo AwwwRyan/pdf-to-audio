@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_label">Now listening</string>
+    <string name="widget_description">Play, pause and skip the document you\'re listening to</string>
+    <string name="widget_empty_title">Accha Sunno</string>
+    <string name="widget_empty_subtitle">Open a document to start listening</string>
+    <string name="widget_play">Play</string>
+    <string name="widget_pause">Pause</string>
+    <string name="widget_rewind">Back 10 seconds</string>
+    <string name="widget_forward">Forward 10 seconds</string>
+</resources>

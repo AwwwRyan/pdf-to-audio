@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home-screen widget, light theme. -->
+    <color name="widget_surface">#F2F6F9</color>
+    <color name="widget_on_surface">#17242E</color>
+    <color name="widget_on_surface_variant">#52616B</color>
+    <color name="widget_track">#D5DFE6</color>
+    <color name="widget_accent">#2F5D7C</color>
+    <color name="widget_on_accent">#FFFFFF</color>
+</resources>

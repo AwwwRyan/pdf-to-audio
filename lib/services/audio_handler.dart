@@ -6,6 +6,7 @@ import 'package:just_audio/just_audio.dart';
 
 import '../constants/app_info.dart';
 import '../models/document.dart';
+import 'home_widget_sync.dart';
 import 'repository.dart';
 
 const skipInterval = Duration(seconds: 10);
@@ -20,6 +21,7 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
 
   final DocumentRepository _repo;
   final AudioPlayer _player = AudioPlayer();
+  final HomeWidgetSync _widget = HomeWidgetSync();
   late final Future<void> _ready;
   String? _docId;
   Timer? _saveTimer;
@@ -41,6 +43,10 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
         onError: (Object _) => _broadcastState());
     _player.speedStream.listen((_) => _broadcastState());
     _player.playingStream.listen((playing) {
+      // audio_service shows the notification and runs the foreground
+      // service only while the broadcast state says playing.
+      _broadcastState();
+      unawaited(_syncWidget());
       _saveTimer?.cancel();
       if (playing) {
         _saveTimer =
@@ -55,6 +61,30 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
         await savePosition();
       }
     });
+    await _syncWidget();
+  }
+
+  /// The document to show or resume: the loaded one, else the last played.
+  Document? _currentOrLast() {
+    final doc = _repo.get(_docId ?? _repo.lastDocumentId ?? '');
+    return doc != null && doc.isPlayable ? doc : null;
+  }
+
+  Future<void> _syncWidget() => _widget.push(
+        _currentOrLast(),
+        playing: _player.playing,
+        position: _docId != null ? _player.position : null,
+      );
+
+  /// Loads the last played document if nothing is loaded, e.g. when the
+  /// widget or a headphone button starts playback after the app was killed.
+  Future<bool> _ensureLoaded() async {
+    await _ready;
+    if (_docId != null) return true;
+    final doc = _currentOrLast();
+    if (doc == null) return false;
+    await openDocument(doc, speed: _repo.settings.playbackSpeed);
+    return true;
   }
 
   /// Loads a document's audio, resuming at its saved position. No-op if it
@@ -80,24 +110,33 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
       album: kAppName,
       duration: loaded ?? doc.totalDuration,
     ));
+    await _repo.setLastDocumentId(doc.id);
+    await _syncWidget();
   }
 
-  /// Stops and unloads [id] if it is playing, e.g. before deleting its audio.
+  /// Stops and unloads [id], and stops offering it in the widget, e.g.
+  /// before deleting or reconverting its audio.
   Future<void> closeIfCurrent(String id) async {
-    if (_docId != id) return;
-    _saveTimer?.cancel();
-    _docId = null;
-    await _player.stop();
-    mediaItem.add(null);
+    if (_repo.lastDocumentId == id) await _repo.setLastDocumentId(null);
+    if (_docId == id) {
+      _saveTimer?.cancel();
+      _docId = null;
+      await _player.stop();
+      mediaItem.add(null);
+    }
+    await _syncWidget();
   }
 
   Future<void> savePosition() async {
     final id = _docId;
     if (id == null || _player.duration == null) return;
     await _repo.savePosition(id, _player.position);
+    await _syncWidget();
   }
 
-  Future<void> seekBy(Duration delta) => seek(_player.position + delta);
+  Future<void> seekBy(Duration delta) async {
+    if (await _ensureLoaded()) await seek(_player.position + delta);
+  }
 
   @override
   Future<void> seek(Duration position) async {
@@ -110,7 +149,9 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   @override
-  Future<void> play() => _player.play();
+  Future<void> play() async {
+    if (await _ensureLoaded()) await _player.play();
+  }
 
   @override
   Future<void> pause() => _player.pause();

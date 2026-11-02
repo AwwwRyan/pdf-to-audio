@@ -50,6 +50,7 @@ dependencies:
   wakelock_plus: ^1.8.2
   uuid: ^4.6.0
   package_info_plus: ^10.2.2
+  home_widget: ^0.10.0
 
 dev_dependencies:
   flutter_test:
