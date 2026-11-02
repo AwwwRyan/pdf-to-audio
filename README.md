@@ -36,20 +36,15 @@ there.
 
 ## Icon, splash and store assets
 
-Everything is generated from one source glyph, `assets/icon/book-headphones.svg`:
+Everything is generated from the source SVGs in `assets/icon/` (the app glyph and
+the widget controls in `assets/icon/widget/`):
 
 ```sh
 python -m pip install resvg-py pillow
-python tool/generate_icons.py                  # PNGs in assets/icon, notification icons, store images
+python tool/generate_icons.py                  # PNGs in assets/icon, notification and widget icons, store images
 dart run flutter_launcher_icons                # launcher icons: legacy, adaptive and Android 13 themed
 dart run flutter_native_splash:create          # splash screens, including the Android 12+ splash API
 ```
 
 The Play Store listing (title, descriptions, changelog, icon, feature graphic) is in
 `fastlane/metadata/android/en-US/`.
-
-## Credits
-
-The app icon uses [Lucide](https://lucide.dev)'s `book-headphones` icon (v1.57.0,
-ISC licence; full text in `assets/licenses/lucide.txt`, also shown in the app under
-Settings → About → View licences).
