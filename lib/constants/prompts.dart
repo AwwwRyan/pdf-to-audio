@@ -1,0 +1,2 @@
+const kStudyReferencesPrompt =
+    "I'm studying this PDF. Go through it section by section and find the best study references for each section using web search: official documentation, free courses, tutorials, hands-on labs, and good videos. For each one, give the title, a working link, the type (docs, course, lab, video, article) and one line on why it helps for that section. Prefer official and well-known sources and current versions. Give 2–4 per major section, and end with the 3 resources I should start with if I only have time for a few.";
