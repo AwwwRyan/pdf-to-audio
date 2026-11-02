@@ -1,0 +1,24 @@
+Accha Sunno turns text-based PDFs into audio you can listen to anywhere, with the screen off. Notes, study guides, reports and books all work. Everything happens on your phone, using Android's built-in text-to-speech engine. There are no accounts, no cloud services and no network calls.
+
+<b>Made for listening</b>
+• Running headers, footers and page numbers are removed, so they aren't read aloud on every page
+• Headings get their own pause, and paragraphs keep their natural breaks
+• Code blocks are replaced with "Code example skipped." You can turn this off in Settings
+• Symbols like → and abbreviations like "e.g." are read naturally
+
+<b>Player</b>
+• Follow-along text shows the passage being spoken. Tap any passage to jump to it
+• Skip back 30, 10 or 5 seconds, or forward 5, 10 or 30 seconds
+• Playback speed from 0.75× to 2×
+• Keeps playing with the screen locked, with notification, lock-screen and headphone controls
+• Remembers where you stopped in every document
+
+<b>Your library</b>
+• Convert a whole PDF or just a page range
+• Conversion can resume if it's interrupted
+• See how much storage each document uses, and delete the audio while keeping the document
+
+<b>Voices</b>
+Pick any voice installed on your phone, and set the speech rate and pitch. For the best results, install offline voice data from Android's text-to-speech settings. The app links straight there.
+
+Scanned PDFs (images of pages) aren't supported, because they contain no text to read.

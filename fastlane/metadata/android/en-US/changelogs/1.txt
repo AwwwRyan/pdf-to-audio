@@ -1,0 +1,1 @@
+First release: on-device PDF-to-audio conversion, follow-along player, background playback with lock-screen controls, page ranges, resumable conversion.
